@@ -1,7 +1,7 @@
 package vista;
 
-import javax.swing.*;
-import java.awt.*;
+import  javax.swing.*;
+import  java.awt.*;
 
 /**
  * Prepara el logotipo utilizado en la ventana principal.

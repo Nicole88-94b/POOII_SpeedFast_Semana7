@@ -2,7 +2,7 @@ package modelo;
 
 import gestor.ZonaDeCarga;
 
-import java.util.concurrent.ThreadLocalRandom;
+import  java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Representa a un repartidor que procesa sus pedidos desde la zona de carga compartida.

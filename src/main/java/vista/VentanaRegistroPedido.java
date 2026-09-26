@@ -3,8 +3,8 @@ package vista;
 import gestor.ControladorDeEnvios;
 import modelo.*;
 
-import javax.swing.*;
-import java.awt.*;
+import  javax.swing.*;
+import  java.awt.*;
 
 /**
  * Formulario utilizado para validar y registrar nuevos pedidos.

@@ -2,7 +2,7 @@ package main;
 
 import vista.VentanaPrincipal;
 
-import javax.swing.SwingUtilities;
+import  javax.swing.SwingUtilities;
 
 /**
  * Inicia la interfaz gráfica de SpeedFast.

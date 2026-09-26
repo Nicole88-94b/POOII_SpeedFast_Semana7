@@ -3,9 +3,9 @@ package vista;
 import gestor.ControladorDeEnvios;
 import modelo.Pedido;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import  javax.swing.*;
+import  javax.swing.table.DefaultTableModel;
+import  java.awt.*;
 
 /**
  * Ventana que presenta los pedidos registrados en una tabla.

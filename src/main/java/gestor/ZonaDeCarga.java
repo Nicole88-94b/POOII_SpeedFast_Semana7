@@ -3,8 +3,8 @@ package gestor;
 import modelo.Pedido;
 import modelo.Repartidor;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import  java.util.concurrent.BlockingQueue;
+import  java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Mantiene una cola compartida de pedidos listos para repartir.

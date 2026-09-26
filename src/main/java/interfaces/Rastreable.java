@@ -1,6 +1,6 @@
 package interfaces;
 
-import java.util.List;
+import  java.util.List;
 
 /**
  * Permite consultar los eventos registrados durante la gestión de pedidos.

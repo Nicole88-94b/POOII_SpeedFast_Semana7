@@ -6,15 +6,15 @@ import modelo.EstadoPedido;
 import modelo.Pedido;
 import modelo.Repartidor;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import  javax.swing.*;
+import  java.awt.*;
+import  java.awt.event.ActionEvent;
+import  java.awt.event.ActionListener;
+import  java.util.ArrayList;
+import  java.util.List;
+import  java.util.concurrent.ExecutorService;
+import  java.util.concurrent.Executors;
+import  java.util.concurrent.TimeUnit;
 
 /**
  * Ventana principal de SpeedFast.

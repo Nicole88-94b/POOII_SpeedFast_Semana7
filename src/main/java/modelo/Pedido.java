@@ -109,7 +109,7 @@ public abstract class Pedido {
     }
 
     /**
-     * Actualiza el estado de la entrega desde las clases del modelo.
+     * Actualiza el estado de la entrega desde las clases del .modelo.
      *
      * @param estado nuevo estado del pedido
      */
