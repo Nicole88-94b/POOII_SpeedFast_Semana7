@@ -1,7 +1,7 @@
 package vista;
 
-import gestor.ControladorDeEnvios;
-import modelo.Pedido;
+import dao.PedidoDAO;
+import modelo.PedidoResumen;
 
 import  javax.swing.*;
 import  javax.swing.table.DefaultTableModel;
@@ -12,17 +12,12 @@ import  java.awt.*;
  * Permite actualizar la información para reflejar asignaciones y cambios de estado.
  */
 public class VentanaListaPedidos extends JFrame {
-    private final ControladorDeEnvios controladorDeEnvios;
+    private final PedidoDAO pedidoDAO = new PedidoDAO();
     private DefaultTableModel modeloTabla;
     private JTable tablaPedidos;
 
-    /**
-     * Crea el listado usando la misma colección administrada por el controlador.
-     *
-     * @param controladorDeEnvios controlador que proporciona los pedidos registrados
-     */
-    public VentanaListaPedidos(ControladorDeEnvios controladorDeEnvios) {
-        this.controladorDeEnvios = controladorDeEnvios;
+
+    public VentanaListaPedidos() {
         arquitecturaVentana();
     }
 
@@ -47,7 +42,7 @@ public class VentanaListaPedidos extends JFrame {
     }
 
     private void listadoPedidos () {
-        String[] columnas = {"ID", "Dirección", "Tipo", "Distancia", "Repartidor", "Estado"};
+        String[] columnas = {"ID", "Dirección", "Tipo", "Distancia", "Estado"};
         modeloTabla = new DefaultTableModel(columnas, 0);
         tablaPedidos = new JTable(modeloTabla);
 
@@ -72,16 +67,13 @@ public class VentanaListaPedidos extends JFrame {
 
     private void cargarPedidos() {
         modeloTabla.setRowCount(0);
-    for (Pedido pedido : controladorDeEnvios.obtenerPedidos()){
-        String nombreRepartidor;
-
-        if (pedido.getRepartidor() == null) {
-            nombreRepartidor = "Sin asignar";
-        } else {
-            nombreRepartidor = pedido.getRepartidor().getNombreRepartidor();
-        }
-        Object[] fila = {pedido.getIdPedido(), pedido.getDireccionEntrega(), pedido.getTipoPedido(),
-                pedido.getDistanciaKilometros(),nombreRepartidor, pedido.getEstado()};
+    for (PedidoResumen pedido : pedidoDAO.listarTodos()){
+        Object[] fila = {
+                pedido.getIdPedido(),
+                pedido.getDireccion(),
+                pedido.getTipo(),
+                pedido.getDistanciaKm(),
+                pedido.getEstado() };
         modeloTabla.addRow(fila);
     }
     }

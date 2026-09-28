@@ -1,13 +1,13 @@
 package main;
 
 import dao.ConexionBD;
-import dao.RepartidorDAO;
-import modelo.Repartidor;
+
 import vista.VentanaPrincipal;
 
 import javax.swing.SwingUtilities;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 
 /**
  * Inicia la interfaz gráfica de SpeedFast.
@@ -26,6 +26,7 @@ public class Main {
             e.printStackTrace();
             return;
         }
+
         SwingUtilities.invokeLater(() -> {
             VentanaPrincipal ventana = new VentanaPrincipal();
             ventana.setVisible(true);

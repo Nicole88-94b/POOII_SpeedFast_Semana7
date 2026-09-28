@@ -1,7 +1,10 @@
 package vista;
 
+import dao.EntregaDAO;
+import dao.RepartidorDAO;
 import gestor.ControladorDeEnvios;
 import gestor.ZonaDeCarga;
+import modelo.Entrega;
 import modelo.EstadoPedido;
 import modelo.Pedido;
 import modelo.Repartidor;
@@ -10,6 +13,8 @@ import  javax.swing.*;
 import  java.awt.*;
 import  java.awt.event.ActionEvent;
 import  java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import  java.util.ArrayList;
 import  java.util.List;
 import  java.util.concurrent.ExecutorService;
@@ -26,6 +31,8 @@ public class VentanaPrincipal extends JFrame {
     private final ZonaDeCarga zonaDeCarga = new ZonaDeCarga();
     private final List<Repartidor> repartidores = new ArrayList<>();
     private JTextArea areaDeTrabajo;
+    private final RepartidorDAO repartidorDAO = new RepartidorDAO();
+    private final EntregaDAO entregaDAO = new EntregaDAO();
 
 
 
@@ -134,11 +141,16 @@ public class VentanaPrincipal extends JFrame {
         btnListarPedido.setForeground(Color.WHITE);
         btnListarPedido.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                VentanaListaPedidos ventanaListaPedidos = new VentanaListaPedidos(controlador);
+                VentanaListaPedidos ventanaListaPedidos = new VentanaListaPedidos();
                 ventanaListaPedidos.setVisible(true);
             }
         });
 
+        JButton btnRegistroRepartidor = new JButton("Registrar Repartidor");
+        btnRegistroRepartidor.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnRegistroRepartidor.setBackground(new Color(37, 91, 82));
+        btnRegistroRepartidor.setForeground(Color.WHITE);
+        btnRegistroRepartidor.addActionListener(e -> registrarRepartidor());
 
         JButton btnAsignarRepartidor = new JButton("Asignar Repartidor");
         btnAsignarRepartidor.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -156,6 +168,7 @@ public class VentanaPrincipal extends JFrame {
 
         botones.add(btnRegistroPedido);
         botones.add(btnListarPedido,sizeMasterbtn);
+        botones.add(btnRegistroRepartidor, sizeMasterbtn);
         botones.add(btnAsignarRepartidor, sizeMasterbtn);
         botones.add(btnIniciar,sizeMasterbtn);
 
@@ -201,6 +214,7 @@ public class VentanaPrincipal extends JFrame {
         JComboBox<String> comboPedidos = new JComboBox<>();
         JComboBox<String> comboRepartidores = new JComboBox<>();
 
+
         for (Pedido pedido : pedidosDisponibles) {
             comboPedidos.addItem(pedido.getIdPedido() + " - " + pedido.getTipoPedido());
         }
@@ -215,17 +229,20 @@ public class VentanaPrincipal extends JFrame {
         panel.add(new JLabel("Repartidor:"));
         panel.add(comboRepartidores);
 
-        int opcion = JOptionPane.showConfirmDialog(
-                this, panel, "Asignar repartidor", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int opcion = JOptionPane.showConfirmDialog(this, panel, "Asignar repartidor", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (opcion != JOptionPane.OK_OPTION) {
             return;
         }
 
         Pedido pedidoSeleccionado = pedidosDisponibles.get(comboPedidos.getSelectedIndex());
-
         Repartidor repartidorSeleccionado = repartidores.get(comboRepartidores.getSelectedIndex());
 
+        if (!asegurarRepartidor(repartidorSeleccionado)) {
+            JOptionPane.showMessageDialog(this, "No fue posible guardar el repartidor en la base de datos.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         boolean asignado = controlador.asignarRepartidor(
                 pedidoSeleccionado.getIdPedido(),
                 repartidorSeleccionado);
@@ -267,35 +284,103 @@ public class VentanaPrincipal extends JFrame {
         ejecutor.shutdown();
 
         Thread supervisor = new Thread(() -> {
-            try {
-                boolean finalizado =
-                        ejecutor.awaitTermination(1, TimeUnit.MINUTES);
+                try {
+                    boolean finalizado =
+                            ejecutor.awaitTermination(1, TimeUnit.MINUTES);
 
-                SwingUtilities.invokeLater(() -> {
                     if (!finalizado) {
-                        areaDeTrabajo.append(
-                                "La simulación no terminó dentro del tiempo esperado." + "\n");
+                        SwingUtilities.invokeLater(() ->
+                                areaDeTrabajo.append("La simulación no terminó dentro del tiempo esperado.\n"));
                         return;
                     }
 
-                    areaDeTrabajo.append("==================== RESULTADO DE ENTREGAS ====================" + "\n");
+                    List<String> resultadosPersistencia = new ArrayList<>();
 
                     for (Pedido pedido : pedidosPreparados) {
-                        areaDeTrabajo.append(pedido.mostrarResumen() +
-                                        "\n" +
-                                        "Repartidor asignado: " +
-                                        pedido.getRepartidor().getNombreRepartidor() + "\n" +
-                                        "-----------------------------------------------------" + "\n");
-                    }
-                });
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                SwingUtilities.invokeLater(() ->
-                        areaDeTrabajo.append("La simulación fue interrumpida.\n"));
-            }
-        });
+                        if (pedido.getEstado() != EstadoPedido.ENTREGADO) {
+                            continue;
+                        }
 
+                        Entrega entrega = new Entrega(pedido, pedido.getRepartidor(), LocalDate.now(), LocalTime.now());
+
+                        if (entregaDAO.guardar(entrega)) {
+                            resultadosPersistencia.add("Entrega " + entrega.getIdEntrega() + " guardada para el pedido "
+                                    + pedido.getIdPedido() + ".");
+                        } else {
+                            resultadosPersistencia.add("No fue posible guardar la entrega del pedido " + pedido.getIdPedido() + ".");
+                        }
+                    }
+
+                    SwingUtilities.invokeLater(() -> {
+                        areaDeTrabajo.append(
+                                "==================== RESULTADO DE ENTREGAS ====================\n"
+                        );
+
+                        for (Pedido pedido : pedidosPreparados) {
+                            areaDeTrabajo.append(pedido.mostrarResumen()
+                                            + "\nRepartidor asignado: "
+                                            + pedido.getRepartidor().getNombreRepartidor()
+                                            + "\n-----------------------------------------------------\n");
+                        }
+
+                        for (String resultado : resultadosPersistencia) {
+                            areaDeTrabajo.append(resultado + "\n");
+                        }
+                    });
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+
+                    SwingUtilities.invokeLater(() ->
+                            areaDeTrabajo.append(
+                                    "La simulación fue interrumpida.\n"
+                            )
+                    );
+                }
+            });
         supervisor.start();
+    }
+
+    private void registrarRepartidor() {
+        JTextField campoNombre = new JTextField();
+        JCheckBox opcionMochila = new JCheckBox("Tiene mochila térmica");
+        JCheckBox opcionDisponible = new JCheckBox("Está disponible");
+
+        JPanel panel = new JPanel(new GridLayout(0, 1, 4, 4));
+        panel.add(new JLabel("Nombre del repartidor:"));
+        panel.add(campoNombre);
+        panel.add(opcionMochila);
+        panel.add(opcionDisponible);
+
+        int opcion = JOptionPane.showConfirmDialog(
+                this, panel, "Registrar repartidor", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (opcion != JOptionPane.OK_OPTION) {
+            return;
+        }
+        String nombre = campoNombre.getText().trim();
+
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this, "Ingrese un nombre válido.", "Dato obligatorio", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Repartidor repartidor = new Repartidor(nombre, opcionMochila.isSelected(), opcionDisponible.isSelected(), zonaDeCarga);
+
+        if (repartidorDAO.guardar(repartidor)) {
+            repartidores.add(repartidor);
+            areaDeTrabajo.append("Repartidor " + nombre + " registrado con ID " + repartidor.getIdRepartidor() + ".\n");
+        } else {
+            JOptionPane.showMessageDialog(this, "No fue posible guardar el repartidor.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private boolean asegurarRepartidor(Repartidor repartidor) {
+        if (repartidor.getIdRepartidor() > 0) {
+            return true;
+        }
+        return repartidorDAO.guardar(repartidor);
     }
 
 }

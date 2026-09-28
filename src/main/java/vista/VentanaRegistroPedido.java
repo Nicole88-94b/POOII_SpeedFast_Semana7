@@ -1,5 +1,6 @@
 package vista;
 
+import dao.PedidoDAO;
 import gestor.ControladorDeEnvios;
 import modelo.*;
 
@@ -19,6 +20,7 @@ public class VentanaRegistroPedido extends JFrame {
     private JTextField campoDireccionEntrega;
     private JTextField campoDistanciaKilometros;
     private JComboBox<String> campoTipoPedido;
+    private final PedidoDAO pedidoDAO = new PedidoDAO();
 
 
     /**
@@ -63,7 +65,7 @@ public class VentanaRegistroPedido extends JFrame {
         campoTipoPedido = new JComboBox<String>(tipos);
         campoIdAutomatico = new JTextField(10);
         campoIdAutomatico.setEditable(false);
-        campoIdAutomatico.setText(String.valueOf(controlador.obtenerSiguienteIdPedido()));
+        campoIdAutomatico.setText("Automático");
         campoPesoEncomienda = new JTextField(10);
         String[] opciones = {"", "ACEPTADA", "RECHAZADA"};
         campoEstadoEmbalaje = new JComboBox<String>(opciones);
@@ -91,7 +93,7 @@ public class VentanaRegistroPedido extends JFrame {
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.EAST;
-        panel.add(new JLabel("ID Automático:"), gbc);
+        panel.add(new JLabel("ID:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1;
@@ -197,7 +199,7 @@ public class VentanaRegistroPedido extends JFrame {
                 pesoEncomienda = validarPeso(pesoTexto);
             }
 
-            int idPedido = controlador.generarIdPedido();
+            int idPedido = 0;
             Pedido pedido;
 
             switch (tipoPedido) {
@@ -217,7 +219,11 @@ public class VentanaRegistroPedido extends JFrame {
                 default:
                     throw new IllegalArgumentException("Seleccione un tipo de pedido válido.");
             }
-
+            if (!pedidoDAO.guardar(pedido)) {
+                JOptionPane.showMessageDialog(this, "No fue posible guardar el pedido en la base de datos.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             if (!controlador.registrarPedido(pedido)) {
                 JOptionPane.showMessageDialog(this, "No fue posible registrar el pedido.",
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -226,10 +232,10 @@ public class VentanaRegistroPedido extends JFrame {
 
             if (pedido.getEstado() == EstadoPedido.RECHAZADO) {
                 JOptionPane.showMessageDialog(this,
-                        "Encomienda " + idPedido + " registrada como RECHAZADA.\n" +
+                        "Encomienda " + pedido.getIdPedido() + " registrada como RECHAZADA.\n" +
                                 "No se puede iniciar el proceso de entrega.", "Encomienda rechazada", JOptionPane.WARNING_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Pedido " + idPedido + " registrado correctamente.");
+                JOptionPane.showMessageDialog(this, "Pedido " + pedido.getIdPedido() + " registrado correctamente.");
             }
             limpiarCampos();
         } catch (IllegalArgumentException e) {
@@ -252,7 +258,7 @@ public class VentanaRegistroPedido extends JFrame {
         campoDireccionEntrega.setText("");
         campoDistanciaKilometros.setText("");
         campoEstadoEmbalaje.setSelectedIndex(0);
-        campoIdAutomatico.setText(String.valueOf(controlador.obtenerSiguienteIdPedido()));
+        campoIdAutomatico.setText("Automático");
     }
 
     private boolean validarCamposComunes(String direccion, String distanciaKilometros, String tipoPedido) {
