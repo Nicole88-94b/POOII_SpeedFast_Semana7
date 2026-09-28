@@ -13,6 +13,7 @@ public class Repartidor implements Runnable {
     private boolean tieneMochilaTermica;
     private boolean disponible;
     private ZonaDeCarga zonaDeCarga;
+    private int idRepartidor;
 
     /**
      * Crea un repartidor y lo vincula con la zona de carga de la simulación.
@@ -29,6 +30,19 @@ public class Repartidor implements Runnable {
         setTieneMochilaTermica(tieneMochilaTermica);
         setDisponible(disponible);
         this.zonaDeCarga = zonaDeCarga;
+    }
+
+    public Repartidor (int idRepartidor, String nombreRepartidor) {
+        this.idRepartidor = idRepartidor;
+        setNombreRepartidor(nombreRepartidor);
+    }
+
+    public int getIdRepartidor() {
+        return idRepartidor;
+    }
+
+    public void setIdRepartidor(int idRepartidor) {
+        this.idRepartidor = idRepartidor;
     }
 
     public String getNombreRepartidor() {

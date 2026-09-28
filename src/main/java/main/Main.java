@@ -1,6 +1,8 @@
 package main;
 
 import dao.ConexionBD;
+import dao.RepartidorDAO;
+import modelo.Repartidor;
 import vista.VentanaPrincipal;
 
 import javax.swing.SwingUtilities;
