@@ -4,8 +4,18 @@ import modelo.Entrega;
 
 import java.sql.*;
 
+/**
+ * Registra las entregas que relacionan pedidos y repartidores persistidos.
+ */
 public class EntregaDAO {
 
+    /**
+     * Guarda una entrega y asigna al objeto el identificador generado por MySQL.
+     * El pedido y el repartidor deben haber sido almacenados previamente.
+     *
+     * @param entrega entrega que se desea registrar
+     * @return {@code true} si la relación se guardó correctamente
+     */
     public boolean guardar(Entrega entrega) {
         if (entrega == null) {
             return false;

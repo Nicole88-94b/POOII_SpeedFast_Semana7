@@ -24,7 +24,7 @@ import  java.util.concurrent.TimeUnit;
 /**
  * Ventana principal de SpeedFast.
  * Comparte el controlador, la zona de carga y los repartidores entre las
- * operaciones de registro, consulta, asignación y entrega.
+ * operaciones de registro, consulta, asignación, entrega y persistencia.
  */
 public class VentanaPrincipal extends JFrame {
     ControladorDeEnvios  controlador = new ControladorDeEnvios();
@@ -65,9 +65,6 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void panelVentana() {
-        JPanel botones = botones();
-        JPanel imagen = panelLogo();
-        JScrollPane visualizador = nuevaArea();
         setLayout(new GridBagLayout());
         distribucionImagen();
         distribucionBotones();
@@ -341,6 +338,10 @@ public class VentanaPrincipal extends JFrame {
         supervisor.start();
     }
 
+    /**
+     * Solicita los datos básicos de un repartidor, lo guarda en MySQL y lo
+     * incorpora a la lista disponible durante la sesión actual.
+     */
     private void registrarRepartidor() {
         JTextField campoNombre = new JTextField();
         JCheckBox opcionMochila = new JCheckBox("Tiene mochila térmica");
@@ -376,6 +377,12 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
+    /**
+     * Guarda los repartidores iniciales la primera vez que son seleccionados.
+     *
+     * @param repartidor repartidor que participará en una asignación
+     * @return {@code true} si ya posee un identificador persistido
+     */
     private boolean asegurarRepartidor(Repartidor repartidor) {
         if (repartidor.getIdRepartidor() > 0) {
             return true;

@@ -8,7 +8,7 @@ import  javax.swing.*;
 import  java.awt.*;
 
 /**
- * Formulario utilizado para validar y registrar nuevos pedidos.
+ * Formulario utilizado para validar y guardar nuevos pedidos en MySQL.
  * Los campos específicos de encomienda se habilitan únicamente cuando
  * corresponde a ese tipo de pedido.
  */
@@ -24,9 +24,9 @@ public class VentanaRegistroPedido extends JFrame {
 
 
     /**
-     * Crea el formulario y lo conecta con el controlador compartido.
+     * Crea el formulario y lo conecta con el controlador de la sesión actual.
      *
-     * @param controlador controlador que almacenará los pedidos registrados
+     * @param controlador controlador que conservará los pedidos para su simulación
      */
     public VentanaRegistroPedido(ControladorDeEnvios controlador) {
         this.controlador = controlador;

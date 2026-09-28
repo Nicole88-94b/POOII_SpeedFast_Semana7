@@ -6,8 +6,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Gestiona el almacenamiento y la consulta de repartidores en MySQL.
+ */
 public class RepartidorDAO {
 
+    /**
+     * Recupera todos los repartidores registrados.
+     *
+     * @return lista de repartidores ordenada por identificador
+     */
     public List<Repartidor> listarTodos() {
         List<Repartidor> repartidores = new ArrayList<>();
         String sql = "SELECT id, nombre FROM repartidor ORDER BY id";
@@ -28,6 +36,13 @@ public class RepartidorDAO {
         return repartidores;
     }
 
+    /**
+     * Guarda un repartidor y actualiza su identificador con el valor generado
+     * por MySQL.
+     *
+     * @param repartidor repartidor que se desea almacenar
+     * @return {@code true} si el registro fue creado correctamente
+     */
     public boolean guardar(Repartidor repartidor) {
         if (repartidor == null) {
             return false;

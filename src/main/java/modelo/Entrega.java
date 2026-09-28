@@ -3,6 +3,10 @@ package modelo;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Representa el registro persistente de un pedido realizado por un repartidor
+ * en una fecha y hora determinadas.
+ */
 public class Entrega {
     private int idEntrega;
     private Pedido pedido;
@@ -10,7 +14,16 @@ public class Entrega {
     private LocalDate fecha;
     private LocalTime hora;
 
-    public Entrega( Pedido pedido, Repartidor repartidor, LocalDate fecha, LocalTime hora ) {
+    /**
+     * Crea una entrega pendiente de recibir su identificador desde MySQL.
+     *
+     * @param pedido pedido entregado
+     * @param repartidor repartidor responsable
+     * @param fecha fecha de la entrega
+     * @param hora hora de la entrega
+     * @throws IllegalArgumentException si alguno de los datos es nulo
+     */
+    public Entrega(Pedido pedido, Repartidor repartidor, LocalDate fecha, LocalTime hora) {
         setPedido(pedido);
         setRepartidor(repartidor);
         setFecha(fecha);
@@ -66,14 +79,11 @@ public class Entrega {
         return hora;
     }
 
-    public void setHora(LocalTime hora) throws  IllegalArgumentException {
+    public void setHora(LocalTime hora) throws IllegalArgumentException {
         if (hora == null) {
             throw new IllegalArgumentException("Hora inválida. Registre una hora");
         }
         this.hora = hora;
     }
-
-
-
 }
 

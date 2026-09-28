@@ -8,8 +8,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Realiza las operaciones de persistencia y consulta de pedidos.
+ */
 public class PedidoDAO {
 
+    /**
+     * Guarda un pedido y asigna al objeto el identificador generado por MySQL.
+     *
+     * @param pedido pedido que se desea almacenar
+     * @return {@code true} si el registro se guardó y recibió un identificador
+     */
     public boolean guardar(Pedido pedido) {
         if (pedido == null) {
             return false;
@@ -42,7 +51,12 @@ public class PedidoDAO {
         }
     }
 
-    public List<PedidoResumen> listarTodos(){
+    /**
+     * Recupera los datos comunes de todos los pedidos almacenados.
+     *
+     * @return lista de pedidos ordenada por identificador
+     */
+    public List<PedidoResumen> listarTodos() {
         List<PedidoResumen> pedidos = new ArrayList<>();
         String sql = "SELECT id, direccion, tipo, distancia_km, estado FROM pedido ORDER BY id";
         try (Connection conexion = ConexionBD.getConnection();
@@ -60,7 +74,7 @@ public class PedidoDAO {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            System.out.println("Lo sentimos, hubo un error al listar los  pedidos");
+            System.out.println("Lo sentimos, hubo un error al listar los pedidos");
 
         }
         return pedidos;

@@ -8,8 +8,7 @@ import  javax.swing.table.DefaultTableModel;
 import  java.awt.*;
 
 /**
- * Ventana que presenta los pedidos registrados en una tabla.
- * Permite actualizar la información para reflejar asignaciones y cambios de estado.
+ * Consulta MySQL y presenta los pedidos persistidos en una tabla actualizable.
  */
 public class VentanaListaPedidos extends JFrame {
     private final PedidoDAO pedidoDAO = new PedidoDAO();
@@ -17,6 +16,9 @@ public class VentanaListaPedidos extends JFrame {
     private JTable tablaPedidos;
 
 
+    /**
+     * Crea la ventana y carga los pedidos disponibles en la base de datos.
+     */
     public VentanaListaPedidos() {
         arquitecturaVentana();
     }
